@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>MessageHandler.qml</file>
+        <file>main.qml</file>
+    </qresource>
+</RCC>
