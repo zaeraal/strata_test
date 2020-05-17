@@ -4,8 +4,10 @@
 #include <QObject>
 #include <QDebug>
 
-struct client {
-    int ii;
+struct sClientData {
+    QObject* m_object;
+    QString  m_username;
+    QString  m_messages;
 };
 
 class ChatServer : public QObject
@@ -14,14 +16,16 @@ class ChatServer : public QObject
 public:
     explicit ChatServer(QObject *parent = nullptr);
 
-    Q_INVOKABLE void registerClient();
-    Q_INVOKABLE void sendMessage();
+public slots:
+    Q_INVOKABLE void registerClient(QString src_username, QObject* src_object);
+    Q_INVOKABLE void unRegisterClient(QString src_username);
+    Q_INVOKABLE void sendMessage(QString src_username, QString dst_username, QString message);
 
 signals:
-    void update(struct client, std::string from, std::string to);
+    void updateClient(QString messages);
 
 private:
-    std::map<std::string, struct client> m_clients;
+    std::map<QString, sClientData> m_clients;
 };
 
 #endif // CHATSERVER_H

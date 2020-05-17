@@ -9,6 +9,19 @@ Window {
     height: 480
     title: qsTr("Strata Chat Application")
 
+    function userSendMessage(message_input, color, dst_username, user_object) {
+        if (message_input.text.length !== 0) {
+            console.log("Sending: ", message_input.text);
+
+            var message = color + user_object.username + ": </b></font><font color=\"black\">" + message_input.text + "</font><br>\n";
+            user_object.deliverMessage(dst_username.text, message);
+
+            message_input.clear();
+        } else {
+            message_input.clear();
+        }
+    }
+
     Rectangle {
         id: userOneChatContainer
         height: parent.height * 0.5
@@ -48,14 +61,7 @@ Window {
             anchors.leftMargin: parent.border.width
             placeholderText: qsTr("Enter Message ...")
             onAccepted: {
-                if (userOneSendMessageInput.text.length != 0) {
-                    console.log("Sending: ", userOneSendMessageInput.text);
-                    userOneMessageView.text += "<b><font color=\"red\">" + chatWindowOneTitle.text + ": </b></font><font color=\"black\">" + userOneSendMessageInput.text + "</font></n>";
-                    userTwoMessageView.text += "<b><font color=\"red\">" + chatWindowOneTitle.text + ": </b></font><font color=\"black\">" + userOneSendMessageInput.text + "</font></n>";
-                    userOneSendMessageInput.clear();
-                } else {
-                    userOneSendMessageInput.clear();
-                }
+                userSendMessage(userOneSendMessageInput, "<b><font color=\"red\">", chatWindowTwoTitle, userOneObject);
             }
         }
 
@@ -69,20 +75,8 @@ Window {
             height: 30
             text: qsTr("Send")
             onClicked: {
-                if (userOneSendMessageInput.text.length != 0) {
-                    console.log("Sending: ", userOneSendMessageInput.text);
-                    userOneMessageView.text += "<b><font color=\"red\">" + chatWindowOneTitle.text + ": </b></font><font color=\"black\">" + userOneSendMessageInput.text + "</font></n>";
-                    userTwoMessageView.text += "<b><font color=\"red\">" + chatWindowOneTitle.text + ": </b></font><font color=\"black\">" + userOneSendMessageInput.text + "</font></n>";
-                    userOneSendMessageInput.clear();
-                } else {
-                    userOneSendMessageInput.clear();
-                }
-                chat_server.registerClient();
+                userSendMessage(userOneSendMessageInput, "<b><font color=\"red\">", chatWindowTwoTitle, userOneObject);
             }
-        }
-
-        MessageHandler {
-            id: userOneObject
         }
 
         ScrollView {
@@ -101,10 +95,16 @@ Window {
                 id: userOneMessageView
                 text: ""
                 enabled: false
-                textFormat: Text.AutoText
+                textFormat: Text.RichText
                 wrapMode: Text.WordWrap
                 placeholderText: qsTr("")
             }
+        }
+
+        MessageHandler {
+            id: userOneObject
+            message_view: userOneMessageView;
+            username: chatWindowOneTitle.text;
         }
     }
 
@@ -149,15 +149,8 @@ Window {
             anchors.leftMargin: parent.border.width
             placeholderText: qsTr("Enter Message ...")
             onAccepted: {
-                if (userTwoSendMessageInput.text.length != 0) {
-                    console.log("Sending: ", userTwoSendMessageInput.text);
-                    userOneMessageView.text += "<b><font color=\"blue\">" + chatWindowTwoTitle.text + ": </b></font><font color=\"black\">" + userTwoSendMessageInput.text + "</font></n>";
-                    userTwoMessageView.text += "<b><font color=\"blue\">" + chatWindowTwoTitle.text + ": </b></font><font color=\"black\">" + userTwoSendMessageInput.text + "</font></n>";
-                    userTwoSendMessageInput.clear();
-                } else {
-                    userTwoSendMessageInput.clear();
-                }
-            }
+                userSendMessage(userTwoSendMessageInput, "<b><font color=\"blue\">", chatWindowOneTitle, userTwoObject);
+             }
         }
 
         Button {
@@ -170,19 +163,8 @@ Window {
             height: 30
             text: qsTr("Send")
             onClicked: {
-                if (userTwoSendMessageInput.text.length != 0) {
-                    console.log("Sending: ", userTwoSendMessageInput.text);
-                    userOneMessageView.text += "<b><font color=\"blue\">" + chatWindowTwoTitle.text + ": </b></font><font color=\"black\">" + userTwoSendMessageInput.text + "</font></n>";
-                    userTwoMessageView.text += "<b><font color=\"blue\">" + chatWindowTwoTitle.text + ": </b></font><font color=\"black\">" + userTwoSendMessageInput.text + "</font></n>";
-                    userTwoSendMessageInput.clear();
-                } else {
-                    userTwoSendMessageInput.clear();
-                }
+                userSendMessage(userTwoSendMessageInput, "<b><font color=\"blue\">", chatWindowOneTitle, userTwoObject);
             }
-        }
-
-        MessageHandler {
-            id: userTwoObject
         }
 
         ScrollView {
@@ -201,18 +183,18 @@ Window {
                 id: userTwoMessageView
                 text: ""
                 enabled: false
-                textFormat: Text.AutoText
+                textFormat: Text.RichText
                 wrapMode: Text.WordWrap
                 placeholderText: qsTr("")
             }
         }
 
+        MessageHandler {
+            id: userTwoObject
+            message_view: userTwoMessageView;
+            username: chatWindowTwoTitle.text;
+        }
     }
-
 }
 
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/
+
